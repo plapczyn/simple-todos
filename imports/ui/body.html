@@ -1,14 +1,16 @@
 <body>
   <div class="container">
     <header>
+      {{> loginButtons}}
+    <div class="jumbotron">
       <h1>Todo List ({{incompleteCount}})</h1>
-
+      <p> This is a simple site for collecting todos. </p>
       <label class="hide-completed">
         <input type="checkbox" />
         Hide Completed Tasks
       </label>
 
-      {{> loginButtons}}
+    </div>
 
       {{#if currentUser}}
         <form class="new-task">
@@ -23,4 +25,5 @@
       {{/each}}
     </ul>
   </div>
+  {{> sAlert}}
 </body>

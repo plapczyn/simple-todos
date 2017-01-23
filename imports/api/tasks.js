@@ -4,6 +4,18 @@ import { check } from 'meteor/check';
 
 export const Tasks = new Mongo.Collection('tasks');
 
+throwError = function(error, reason, details) {
+  var meteorError = new Meteor.Error(error, reason, details);
+
+  if (Meteor.isClient) {
+    // this error is never used
+    // on the client, the return value of a stub is ignored
+    return meteorError;
+  } else if (Meteor.isServer) {
+    throw meteorError;
+  }
+};
+
 if (Meteor.isServer) {
   // This code only runs on the server
   // Only publish tasks that are public or belong to the current user
@@ -35,6 +47,12 @@ Meteor.methods({
   },
   'tasks.remove'(taskId) {
     check(taskId, String);
+
+    // Only logged in users can remove tasks
+    if (! this.userId) {
+      //throw new Meteor.Error('not-authorized',"User must be logged in to remove tasks");
+      throwError('logged-out',"User must be logged in to remove tasks");
+    }
 
     const task = Tasks.findOne(taskId);
     if (task.private && task.owner !== this.userId) {

@@ -15,7 +15,12 @@ Template.task.events({
     Meteor.call('tasks.setChecked', this._id, !this.checked);
   },
   'click .delete'() {
-    Meteor.call('tasks.remove', this._id);
+    Meteor.call('tasks.remove', this._id, function (error) {
+      if (error && error.error === "logged-out") {
+        // show a nice error message
+        sAlert.error('You must be logged in to remove items!',{position:'bottom'});
+      }
+    });
   },
   'click .toggle-private'() {
     Meteor.call('tasks.setPrivate', this._id, !this.private);
